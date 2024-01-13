@@ -23,6 +23,12 @@ Python
 python -m http.server 8080
 ```
 
+Docker
+
+```
+docker-compose up
+```
+
 ### Open example
 
 http://localhost:8080/example/arm/
