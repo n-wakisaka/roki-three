@@ -1,31 +1,31 @@
-import { Object3D, Quaternion, Matrix4 } from 'three'
-import { HasName } from '../util/Name.js'
-import { ZTKParser } from '../zeda/ZTKParser.js'
-import { MShape } from '../zeo/MShape.js'
-import { Link } from './Link.js'
+import { Object3D, Quaternion, Matrix4 } from 'three';
+import { HasName } from '../util/Name.js';
+import { ZTKParser } from '../zeda/ZTKParser.js';
+import { MShape } from '../zeo/MShape.js';
+import { Link } from './Link.js';
 
 export class Chain extends Object3D implements HasName {
-  links: Array<Link> = []
-  mshape = new MShape()
+  links: Array<Link> = [];
+  mshape = new MShape();
 
   FK(dis?: Array<number>): void {
-    var offset = 0
+    var offset = 0;
     for (const link of this.links) {
-      const dof = link.joint?.DOF ?? 0
+      const dof = link.joint?.DOF ?? 0;
       if (dof === 0) {
-        continue
+        continue;
       }
-      link.updateFrame(dis?.slice(offset, offset + dof))
-      offset += dof
+      link.updateFrame(dis?.slice(offset, offset + dof));
+      offset += dof;
     }
   }
 
   getJointSize(): number {
-    var cnt = 0
+    var cnt = 0;
     for (const link of this.links) {
-      cnt += link.joint?.DOF ?? 0
+      cnt += link.joint?.DOF ?? 0;
     }
-    return cnt
+    return cnt;
   }
 
   /*
@@ -33,17 +33,17 @@ export class Chain extends Object3D implements HasName {
     Three: x, y, z -> right, up, forward
     */
   transformToThree(): void {
-    const mat = new Matrix4()
-    mat.set(0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1)
-    this.quaternion.premultiply(new Quaternion().setFromRotationMatrix(mat))
+    const mat = new Matrix4();
+    mat.set(0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1);
+    this.quaternion.premultiply(new Quaternion().setFromRotationMatrix(mat));
   }
 
   fromZTK(this: Chain, parser: ZTKParser): void {
-    this.mshape.fromZTK(parser)
+    this.mshape.fromZTK(parser);
 
-    const num_link = parser.countTag('link')
-    this.links = [...Array<Link>(num_link)].map(() => new Link())
-    this.links.forEach((l) => this.add(l))
+    const num_link = parser.countTag('link');
+    this.links = [...Array<Link>(num_link)].map(() => new Link());
+    this.links.forEach((l) => this.add(l));
     parser.evaluateTag(
       {
         chain: {
@@ -52,37 +52,37 @@ export class Chain extends Object3D implements HasName {
               {
                 name: {
                   evaluator: (parser: ZTKParser, obj: Chain, _index: number): void => {
-                    obj.name = parser.getValue() ?? obj.name
+                    obj.name = parser.getValue() ?? obj.name;
                   },
                   num: 1,
                 },
               },
               obj,
-            )
+            );
           },
           num: 1,
         },
         link: {
           evaluator: (parser: ZTKParser, obj: Chain, index: number): void => {
-            obj.links[index].fromZTK(parser, this.mshape.shape)
+            obj.links[index].fromZTK(parser, this.mshape.shape);
           },
           num: num_link,
         },
       },
       this,
-    )
+    );
 
     parser.evaluateTag(
       {
         link: {
           evaluator: (parser: ZTKParser, obj: Chain, index: number): void => {
-            obj.links[index].connectFromZTK(parser, this.links)
+            obj.links[index].connectFromZTK(parser, this.links);
           },
           num: num_link,
         },
       },
       this,
-    )
-    this.links.forEach((l) => l.updateFrame())
+    );
+    this.links.forEach((l) => l.updateFrame());
   }
 }

@@ -1,9 +1,9 @@
-import { Frame } from '../zeo/Frame.js'
-import { Joint } from './Joint.js'
+import { Frame } from '../zeo/Frame.js';
+import { Joint } from './Joint.js';
 
 export class JointFixed extends Joint {
-  static readonly NAME = 'fixed'
-  readonly DOF = 0
+  static readonly NAME = 'fixed';
+  readonly DOF = 0;
 
   setDis(): void {}
 
