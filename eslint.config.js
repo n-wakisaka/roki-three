@@ -1,9 +1,9 @@
-import globals from 'globals'
-import js from '@eslint/js'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import typescriptEslintParser from '@typescript-eslint/parser'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import vitest from 'eslint-plugin-vitest'
+import globals from 'globals';
+import js from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import typescriptEslintParser from '@typescript-eslint/parser';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import vitest from 'eslint-plugin-vitest';
 
 export default [
   {
@@ -92,4 +92,4 @@ export default [
       ...typescriptEslint.configs['recommended-type-checked'].rules,
     },
   },
-]
+];
