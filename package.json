@@ -1,5 +1,5 @@
 {
-  "name": "@n-wakisaka/roki",
+  "name": "@n-wakisaka/roki-three",
   "version": "0.0.1",
   "description": "RoKiChain(ZTK) Loader for THREE.js",
   "type": "module",
@@ -7,7 +7,7 @@
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/roki.js"
+        "default": "./dist/roki-three.js"
       }
     }
   },
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/n-wakisaka/roki.js"
+    "url": "https://github.com/n-wakisaka/roki-three"
   },
   "author": "n-wakisaka",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/n-wakisaka/roki.js/issues"
+    "url": "https://github.com/n-wakisaka/roki-three/issues"
   },
-  "homepage": "https://github.com/n-wakisaka/roki.js#readme",
+  "homepage": "https://github.com/n-wakisaka/roki-three#readme",
   "devDependencies": {
     "@eslint/js": "^8.56.0",
     "@types/node": "^20.10.5",
