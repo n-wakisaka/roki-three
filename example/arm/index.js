@@ -70,7 +70,6 @@ function loadArm() {
   });
 
   manager.onLoad = () => {
-    robot.transformToThree();
     scene.add(robot);
   };
 }

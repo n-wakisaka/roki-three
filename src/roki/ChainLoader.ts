@@ -11,6 +11,7 @@ export class ChainLoader extends FileLoader<Chain, ZTKParser> {
   generateInstance(parser: ZTKParser): Chain {
     const chain = new Chain();
     chain.fromZTK(parser);
+    chain.transformToThree();
     return chain;
   }
 }
