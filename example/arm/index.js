@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import { ChainLoader, SequenceLoader } from 'roki';
+import { ChainLoader, SequenceLoader } from 'roki-three';
 
 let scene, camera, renderer, robot, sequence;
 const clock = new THREE.Clock();

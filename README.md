@@ -1,4 +1,4 @@
-# roki.js
+# roki-three
 
 ## Getting Started
 
