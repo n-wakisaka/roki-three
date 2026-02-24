@@ -7,8 +7,8 @@ export class MShape {
   optic: Array<OpticalInfo> = [];
 
   fromZTK(parser: ZTKParser) {
-    const num_shape = parser.countTag('shape');
-    const num_optic = parser.countTag('optic');
+    const num_shape = parser.countTag('zeo::shape');
+    const num_optic = parser.countTag('zeo::optic');
 
     // TODO: cylinder軸など各geometryのテストを書く
     this.shape = [...Array<Shape>(num_shape)].map(() => new Shape());
@@ -16,7 +16,7 @@ export class MShape {
 
     parser.evaluateTag(
       {
-        optic: {
+        'zeo::optic': {
           evaluator: (parser: ZTKParser, obj: MShape, index: number): void => {
             obj.optic[index].fromZTK(parser);
           },
@@ -28,7 +28,7 @@ export class MShape {
 
     parser.evaluateTag(
       {
-        shape: {
+        'zeo::shape': {
           evaluator: (parser: ZTKParser, obj: MShape, index: number): void => {
             obj.shape[index].fromZTK(parser, obj.optic);
           },

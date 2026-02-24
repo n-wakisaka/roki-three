@@ -163,11 +163,11 @@ describe('ZTKParser', () => {
     };
     parser.evaluateTag(
       {
-        tag1: {
+        'tag1': {
           evaluator: (parser: ZTKParser, obj: null, index: number): void => {
             parser.evaluateKey(
               {
-                key1: {
+                'key1': {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val1');
                     expect(parser.getValue()).toBe('val2');
@@ -176,7 +176,7 @@ describe('ZTKParser', () => {
                   },
                   num: 1,
                 },
-                key2: {
+                'key2': {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val4');
                     expect(parser.getValue()).toBe('val5');
@@ -184,7 +184,7 @@ describe('ZTKParser', () => {
                   },
                   num: 1,
                 },
-                key3: {
+                'key3': {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBeCloseTo(1.0);
                     expect(parser.getValue()).toBeCloseTo(2.0);
@@ -199,11 +199,11 @@ describe('ZTKParser', () => {
           },
           num: 1,
         },
-        tag2: {
+        'tag2': {
           evaluator: (parser: ZTKParser, obj: null, index: number): void => {
             parser.evaluateKey(
               {
-                key1: {
+                'key1': {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val1');
                     expect(parser.getValue()).toBe('val2');
@@ -211,7 +211,7 @@ describe('ZTKParser', () => {
                   },
                   num: 1,
                 },
-                key2: {
+                'key2': {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val3');
                     expect(parser.getValue()).toBe('val4');
@@ -234,5 +234,44 @@ describe('ZTKParser', () => {
     expect(counter['tag1']['key3']).toBe(1);
     expect(counter['tag2']['key1']).toBe(1);
     expect(counter['tag2']['key2']).toBe(1);
+  });
+
+  test('evaluation_with_namespace_tag', () => {
+    const parser = new ZTKParser();
+    const data = `
+            [roki::link]
+            name: link#00
+
+            [zeo::shape]
+            type: box
+            `;
+    const isSucceeded = parser.parse(data);
+    expect(isSucceeded).toBe(true);
+
+    expect(parser.countTag('link')).toBe(0);
+    expect(parser.countTag('roki::link')).toBe(1);
+    expect(parser.countTag('shape')).toBe(0);
+    expect(parser.countTag('zeo::shape')).toBe(1);
+
+    const counter = { link: 0, shape: 0 };
+    parser.evaluateTag(
+      {
+        'roki::link': {
+          evaluator: () => {
+            counter.link++;
+          },
+          num: 1,
+        },
+        'zeo::shape': {
+          evaluator: () => {
+            counter.shape++;
+          },
+          num: 1,
+        },
+      },
+      null,
+    );
+    expect(counter.link).toBe(1);
+    expect(counter.shape).toBe(1);
   });
 });

@@ -28,40 +28,40 @@ export class OpticalInfo implements HasName {
 
     parser.evaluateKey(
       {
-        name: {
+        'name': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.name = parser.getValue() ?? obj.name;
           },
           num: 1,
         },
-        ambient: {
+        'ambient': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.ambient = [v[0], v[1], v[2]];
           },
           num: 1,
         },
-        diffuse: {
+        'diffuse': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.diffuse = [v[0], v[1], v[2]];
           },
           num: 1,
         },
-        specular: {
+        'specular': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.specular = [v[0], v[1], v[2]];
           },
           num: 1,
         },
-        shininess: {
+        'shininess': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.shininess = parser.getNumber();
           },
           num: 1,
         },
-        alpha: {
+        'alpha': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.alpha = parser.getNumber();
           },

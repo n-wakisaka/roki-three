@@ -31,33 +31,33 @@ export class Link extends Object3D implements HasName {
   fromZTK(this: Link, parser: ZTKParser, shapes: Array<Shape>): void {
     parser.evaluateKey(
       {
-        name: {
+        'name': {
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.name = parser.getValue() ?? obj.name;
           },
           num: 1,
         },
-        jointtype: {
+        'jointtype': {
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.createJoint(parser.getValue() ?? '');
           },
           num: 1,
         },
-        mass: {
+        'mass': {
           // not used
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.body.mp.mass = parser.getNumber();
           },
           num: 1,
         },
-        stuff: {
+        'stuff': {
           // not used
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.body.stuff = parser.getValue();
           },
           num: 1,
         },
-        COM: {
+        'COM': {
           // not used
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             const v = parser.getNumbers(3);
@@ -65,7 +65,7 @@ export class Link extends Object3D implements HasName {
           },
           num: 1,
         },
-        inertia: {
+        'inertia': {
           // not used
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             const v = parser.getNumbers(9);
@@ -73,19 +73,19 @@ export class Link extends Object3D implements HasName {
           },
           num: 1,
         },
-        pos: {
+        'pos': {
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.orgFrame.posFromZTK(parser);
           },
           num: 1,
         },
-        att: {
+        'att': {
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.orgFrame.attFromZTK(parser);
           },
           num: 1,
         },
-        frame: {
+        'frame': {
           evaluator: (parser: ZTKParser, obj: Link, _index: number): void => {
             obj.orgFrame.fromZTK(parser);
           },
@@ -104,7 +104,7 @@ export class Link extends Object3D implements HasName {
     const num_shape = parser.countKey('shape');
     parser.evaluateKey(
       {
-        shape: {
+        'shape': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const name = parser.getValue();
             const shape = obj.shapes.find((s) => s.name == name);
@@ -128,7 +128,7 @@ export class Link extends Object3D implements HasName {
 
     parser.evaluateKey(
       {
-        parent: {
+        'parent': {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const name = parser.getValue();
             const parent = obj.links.find((l) => l.name == name);

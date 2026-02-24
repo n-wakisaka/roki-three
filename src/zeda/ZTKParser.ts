@@ -45,16 +45,20 @@ export class ZTKParser extends FileParser {
       const token = tokens[i];
       if (token === ZTKParser.TAG_BEGIN_IDENT) {
         // tag
-        if (i + 2 < tokens.length && tokens[i + 2] !== ZTKParser.TAG_END_IDENT) {
+        let j = i + 1;
+        while (j < tokens.length && tokens[j] !== ZTKParser.TAG_END_IDENT) {
+          j++;
+        }
+        if (j >= tokens.length || j === i + 1) {
           // invalid
           return false;
         }
-        const tag = tokens[i + 1];
+        const tag = tokens.slice(i + 1, j).join('');
         this.#data.insertTail({
           tag: tag,
           keyValues: new LinkedList<KeyField>(),
         });
-        i += 2;
+        i = j;
       } else if (token === ZTKParser.TAG_END_IDENT) {
         // invalid
         return false;
