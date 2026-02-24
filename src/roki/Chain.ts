@@ -41,12 +41,12 @@ export class Chain extends Object3D implements HasName {
   fromZTK(this: Chain, parser: ZTKParser): void {
     this.mshape.fromZTK(parser);
 
-    const num_link = parser.countTag('link');
+    const num_link = parser.countTag('roki::link');
     this.links = [...Array<Link>(num_link)].map(() => new Link());
     this.links.forEach((l) => this.add(l));
     parser.evaluateTag(
       {
-        chain: {
+        'roki::chain': {
           evaluator: (parser: ZTKParser, obj: Chain, _index: number): void => {
             parser.evaluateKey(
               {
@@ -62,7 +62,7 @@ export class Chain extends Object3D implements HasName {
           },
           num: 1,
         },
-        link: {
+        'roki::link': {
           evaluator: (parser: ZTKParser, obj: Chain, index: number): void => {
             obj.links[index].fromZTK(parser, this.mshape.shape);
           },
@@ -74,7 +74,7 @@ export class Chain extends Object3D implements HasName {
 
     parser.evaluateTag(
       {
-        link: {
+        'roki::link': {
           evaluator: (parser: ZTKParser, obj: Chain, index: number): void => {
             obj.links[index].connectFromZTK(parser, this.links);
           },

@@ -235,4 +235,43 @@ describe('ZTKParser', () => {
     expect(counter['tag2']['key1']).toBe(1);
     expect(counter['tag2']['key2']).toBe(1);
   });
+
+  test('evaluation_with_namespace_tag', () => {
+    const parser = new ZTKParser();
+    const data = `
+            [roki::link]
+            name: link#00
+
+            [zeo::shape]
+            type: box
+            `;
+    const isSucceeded = parser.parse(data);
+    expect(isSucceeded).toBe(true);
+
+    expect(parser.countTag('link')).toBe(0);
+    expect(parser.countTag('roki::link')).toBe(1);
+    expect(parser.countTag('shape')).toBe(0);
+    expect(parser.countTag('zeo::shape')).toBe(1);
+
+    const counter = { link: 0, shape: 0 };
+    parser.evaluateTag(
+      {
+        'roki::link': {
+          evaluator: () => {
+            counter.link++;
+          },
+          num: 1,
+        },
+        'zeo::shape': {
+          evaluator: () => {
+            counter.shape++;
+          },
+          num: 1,
+        },
+      },
+      null,
+    );
+    expect(counter.link).toBe(1);
+    expect(counter.shape).toBe(1);
+  });
 });
