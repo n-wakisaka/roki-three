@@ -48,14 +48,14 @@ export class GeometryFactory {
     };
     parser.evaluateKey(
       {
-        'center': {
+        center: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.center.set(v[0], v[1], v[2]);
           },
           num: 1,
         },
-        'ax': {
+        ax: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getValue();
             if (v == 'auto') {
@@ -68,7 +68,7 @@ export class GeometryFactory {
           },
           num: 1,
         },
-        'ay': {
+        ay: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getValue();
             if (v == 'auto') {
@@ -81,7 +81,7 @@ export class GeometryFactory {
           },
           num: 1,
         },
-        'az': {
+        az: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getValue();
             if (v == 'auto') {
@@ -94,19 +94,19 @@ export class GeometryFactory {
           },
           num: 1,
         },
-        'depth': {
+        depth: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.depth = parser.getNumber();
           },
           num: 1,
         },
-        'width': {
+        width: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.width = parser.getNumber();
           },
           num: 1,
         },
-        'height': {
+        height: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.height = parser.getNumber();
           },
@@ -145,27 +145,27 @@ export class GeometryFactory {
     };
     parser.evaluateKey(
       {
-        'center': {
+        center: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.center.set(v[0], v[1], v[2]);
           },
           num: 1,
         },
-        'vert': {
+        vert: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.vert.set(v[0], v[1], v[2]);
           },
           num: 1,
         },
-        'radius': {
+        radius: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.radius = parser.getNumber();
           },
           num: 1,
         },
-        'div': {
+        div: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.div = parser.getNumber();
           },
@@ -197,20 +197,20 @@ export class GeometryFactory {
     };
     parser.evaluateKey(
       {
-        'center': {
+        center: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, index: number): void => {
             const v = parser.getNumbers(3);
             obj.center[index].set(v[0], v[1], v[2]);
           },
           num: 2,
         },
-        'radius': {
+        radius: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.radius = parser.getNumber();
           },
           num: 1,
         },
-        'div': {
+        div: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.div = parser.getNumber();
           },
@@ -242,20 +242,20 @@ export class GeometryFactory {
     };
     parser.evaluateKey(
       {
-        'center': {
+        center: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             const v = parser.getNumbers(3);
             obj.center.set(v[0], v[1], v[2]);
           },
           num: 1,
         },
-        'radius': {
+        radius: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.radius = parser.getNumber();
           },
           num: 1,
         },
-        'div': {
+        div: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.div = parser.getNumber();
           },
@@ -284,7 +284,7 @@ export class GeometryFactory {
 
     parser.evaluateKey(
       {
-        'vert': {
+        vert: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, index: number): void => {
             const id = parser.getNumber();
             if (id !== index) {
@@ -297,7 +297,7 @@ export class GeometryFactory {
           },
           num: vertNum,
         },
-        'face': {
+        face: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, index: number): void => {
             const v = parser.getNumbers(3);
             obj.indices[3 * index] = v[0];

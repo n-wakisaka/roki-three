@@ -33,35 +33,35 @@ export class Shape implements HasName {
 
     parser.evaluateKey(
       {
-        'name': {
+        name: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.name = parser.getValue() ?? obj.name;
           },
           num: 1,
         },
-        'type': {
+        type: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.type = parser.getValue() ?? obj.type;
           },
           num: 1,
         },
-        'optic': {
+        optic: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void => {
             obj.optic = parser.getValue() ?? obj.optic;
           },
           num: 1,
         },
-        'pos': {
+        pos: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void =>
             obj.frame.posFromZTK(parser),
           num: 1,
         },
-        'att': {
+        att: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void =>
             obj.frame.attFromZTK(parser),
           num: 1,
         },
-        'frame': {
+        frame: {
           evaluator: (parser: ZTKParser, obj: ReadPrp, _index: number): void =>
             obj.frame.fromZTK(parser),
           num: 1,

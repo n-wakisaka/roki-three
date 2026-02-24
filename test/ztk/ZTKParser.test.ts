@@ -163,11 +163,11 @@ describe('ZTKParser', () => {
     };
     parser.evaluateTag(
       {
-        'tag1': {
+        tag1: {
           evaluator: (parser: ZTKParser, obj: null, index: number): void => {
             parser.evaluateKey(
               {
-                'key1': {
+                key1: {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val1');
                     expect(parser.getValue()).toBe('val2');
@@ -176,7 +176,7 @@ describe('ZTKParser', () => {
                   },
                   num: 1,
                 },
-                'key2': {
+                key2: {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val4');
                     expect(parser.getValue()).toBe('val5');
@@ -184,7 +184,7 @@ describe('ZTKParser', () => {
                   },
                   num: 1,
                 },
-                'key3': {
+                key3: {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBeCloseTo(1.0);
                     expect(parser.getValue()).toBeCloseTo(2.0);
@@ -199,11 +199,11 @@ describe('ZTKParser', () => {
           },
           num: 1,
         },
-        'tag2': {
+        tag2: {
           evaluator: (parser: ZTKParser, obj: null, index: number): void => {
             parser.evaluateKey(
               {
-                'key1': {
+                key1: {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val1');
                     expect(parser.getValue()).toBe('val2');
@@ -211,7 +211,7 @@ describe('ZTKParser', () => {
                   },
                   num: 1,
                 },
-                'key2': {
+                key2: {
                   evaluator: (parser: ZTKParser, obj: null, index: number): void => {
                     expect(parser.getValue()).toBe('val3');
                     expect(parser.getValue()).toBe('val4');

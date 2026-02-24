@@ -32,7 +32,7 @@ export abstract class FileLoader<T, Parser extends FileParser> extends Loader<T>
         }
       })
       .then((data) => {
-        const obj = this.parse(data)
+        const obj = this.parse(data);
         if (onLoad) onLoad(obj);
         this.manager.itemEnd(url);
       })

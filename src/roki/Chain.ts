@@ -50,7 +50,7 @@ export class Chain extends Object3D implements HasName {
           evaluator: (parser: ZTKParser, obj: Chain, _index: number): void => {
             parser.evaluateKey(
               {
-                'name': {
+                name: {
                   evaluator: (parser: ZTKParser, obj: Chain, _index: number): void => {
                     obj.name = parser.getValue() ?? obj.name;
                   },
