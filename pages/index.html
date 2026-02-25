@@ -39,11 +39,14 @@
       .panelHeader {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px;
+        list-style: none;
       }
 
-      h1 {
+      .panelHeader::-webkit-details-marker {
+        display: none;
+      }
+
+      .panelTitle {
         margin: 0 0 8px;
         font-size: 18px;
       }
@@ -61,6 +64,17 @@
       ul {
         margin: 6px 0 0;
         padding-left: 20px;
+      }
+
+      details {
+        margin-top: 8px;
+      }
+
+      summary {
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        user-select: none;
       }
 
       .toolbar {
@@ -127,9 +141,66 @@
         width: 100%;
       }
 
+      input[type='text'] {
+        width: 100%;
+      }
+
+      .toggleGroup {
+        display: inline-flex;
+        margin-left: 8px;
+        border: 1px solid #888;
+        border-radius: 6px;
+        overflow: hidden;
+        vertical-align: middle;
+      }
+
+      .sourceTitle {
+        font-size: 12px;
+      }
+
+      .toggleOption {
+        display: inline-flex;
+        margin: 0;
+        padding: 0;
+      }
+
+      .toggleOption input[type='radio'] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .toggleOption span {
+        display: inline-block;
+        padding: 2px 10px;
+        font-size: 12px;
+        background: #fff;
+        color: #333;
+        border-right: 1px solid #888;
+        cursor: pointer;
+      }
+
+      .toggleOption:last-child span {
+        border-right: none;
+      }
+
+      .toggleOption input[type='radio']:checked + span {
+        background: #d8e8ff;
+      }
+
       #status {
         margin-top: 12px;
         color: #333;
+      }
+
+      .configSection {
+        margin-top: 12px;
+      }
+
+      .separatorTop {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #d0d0d0;
       }
 
       #playbackTime {
@@ -141,39 +212,49 @@
   </head>
   <body>
     <div id="app">
-      <div class="panelHeader">
-        <h1>roki-three pages viewer</h1>
-        <button id="togglePanelButton" type="button">Hide</button>
-      </div>
+      <details open>
+        <summary class="panelHeader"><span class="panelTitle">roki-three pages viewer</span></summary>
+        <div id="controlsPanel">
+          <details>
+            <summary>使い方</summary>
+            <ul>
+              <li>Pair は「ztk + zvs」を1組として読み込む単位です。</li>
+              <li>Add pair を押すと、新しい Pair を追加できます。</li>
+              <li>各 Pair のチェックボックスは「Load selected の対象に含めるか」を表します。</li>
+              <li>Pair 0 は同梱サンプル（example/arm）です。不要ならチェックを外してください。</li>
+              <li>読み込みは、必要な Pair をチェックして Load selected を押します。</li>
+              <li>Clear all は、読み込み済みモデルをシーンからすべて削除します（Pair入力欄は残ります）。</li>
+              <li>再生は Play/Pause/Restart で操作します。</li>
+              <li>Save / Load config で pair 構成を保存・復元できます。file 指定の場合は内容は保存されません。</li>
+            </ul>
+          </details>
 
-      <div id="controlsPanel">
-        <p>使い方:</p>
-        <ul>
-          <li>Pair は「ztk + zvs」を1組として読み込む単位です。</li>
-          <li>Add pair を押すと、新しい Pair を追加できます。</li>
-          <li>各 Pair のチェックボックスは「Load selected の対象に含めるか」を表します。</li>
-          <li>Pair 0 は同梱サンプル（example/arm）です。不要ならチェックを外してください。</li>
-          <li>読み込みは、必要な Pair をチェックして Load selected を押します。</li>
-          <li>Clear all は、読み込み済みモデルをシーンからすべて削除します（Pair入力欄は残ります）。</li>
-          <li>再生は Play/Pause/Restart で操作します。</li>
-        </ul>
+          <div class="toolbar separatorTop">
+            <button id="addPairButton" type="button">Add pair</button>
+            <button id="loadButton" type="button">Load selected</button>
+            <button id="clearButton" type="button">Clear all</button>
+          </div>
 
-        <div class="toolbar">
-          <button id="addPairButton" type="button">Add pair</button>
-          <button id="loadButton" type="button">Load selected</button>
-          <button id="clearButton" type="button">Clear all</button>
+          <div class="toolbar">
+            <button id="playButton" type="button">Play</button>
+            <button id="pauseButton" type="button">Pause</button>
+            <button id="restartButton" type="button">Restart</button>
+            <span id="playbackTime">Time: 0.00s</span>
+          </div>
+
+          <div id="pairs"></div>
+          <div class="configSection">
+            <div class="toolbar">
+              <button id="saveConfigButton" type="button">Save config</button>
+              <button id="loadConfigButton" type="button">Load config</button>
+              <input id="configFileInput" type="file" accept=".json,application/json" hidden />
+            </div>
+          </div>
+          <div class="separatorTop">
+            <div id="status">Ready</div>
+          </div>
         </div>
-
-        <div class="toolbar">
-          <button id="playButton" type="button">Play</button>
-          <button id="pauseButton" type="button">Pause</button>
-          <button id="restartButton" type="button">Restart</button>
-          <span id="playbackTime">Time: 0.00s</span>
-        </div>
-
-        <div id="pairs"></div>
-        <div id="status">Ready</div>
-      </div>
+      </details>
     </div>
 
     <script type="module" src="./index.js"></script>
