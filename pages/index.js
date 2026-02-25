@@ -4,10 +4,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const MODULE_CANDIDATES = ['./dist/roki-three.js', '../dist/roki-three.js', '/dist/roki-three.js'];
 const DEFAULT_PAIR = {
   id: 0,
-  ztkPath: '../example/arm/arm_2DoF.ztk',
-  zvsPath: '../example/arm/arm.zvs',
-  ztkName: 'example/arm/arm_2DoF.ztk',
-  zvsName: 'example/arm/arm.zvs',
+  ztkPath: './assets/arm_2DoF.ztk',
+  zvsPath: './assets/arm.zvs',
+  ztkName: 'assets/arm_2DoF.ztk',
+  zvsName: 'assets/arm.zvs',
 };
 
 const state = {
