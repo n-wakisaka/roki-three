@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const MODULE_CANDIDATES = ['./dist/roki-three.js', '../dist/roki-three.js', '/dist/roki-three.js'];
+const PAIR_CONFIG_VERSION = 1;
 const DEFAULT_PAIR = {
   id: 0,
   ztkPath: './assets/arm_2DoF.ztk',
@@ -20,7 +21,6 @@ const state = {
   lastFrameTimeMs: 0,
   nextPairId: 1,
   rokiThreeModule: undefined,
-  isPanelHidden: false,
 };
 
 bootstrap().catch((error) => {
@@ -80,10 +80,14 @@ function bindUiEvents() {
   document.getElementById('addPairButton')?.addEventListener('click', () => addCustomPairForm());
   document.getElementById('loadButton')?.addEventListener('click', () => loadSelectedPairs());
   document.getElementById('clearButton')?.addEventListener('click', () => clearAllActors());
+  document.getElementById('saveConfigButton')?.addEventListener('click', () => savePairConfigToFile());
+  document.getElementById('loadConfigButton')?.addEventListener('click', () => triggerConfigLoad());
+  document
+    .getElementById('configFileInput')
+    ?.addEventListener('change', (event) => handleConfigFileSelected(event));
   document.getElementById('playButton')?.addEventListener('click', () => playAnimation());
   document.getElementById('pauseButton')?.addEventListener('click', () => pauseAnimation());
   document.getElementById('restartButton')?.addEventListener('click', () => restartAnimation());
-  document.getElementById('togglePanelButton')?.addEventListener('click', () => togglePanel());
 }
 
 function appendInitialPairs() {
@@ -95,62 +99,121 @@ function pairsContainer() {
   return document.getElementById('pairs');
 }
 
-function addDefaultPairForm() {
+function addDefaultPairForm(options = {}) {
   const container = pairsContainer();
   if (!container) return;
+  const { enabled = true, ztkPath = DEFAULT_PAIR.ztkPath, zvsPath = DEFAULT_PAIR.zvsPath } = options;
 
   const wrapper = document.createElement('div');
   wrapper.className = 'pair';
   wrapper.dataset.pairId = String(DEFAULT_PAIR.id);
   wrapper.dataset.pairType = 'default';
-  wrapper.dataset.ztkPath = DEFAULT_PAIR.ztkPath;
-  wrapper.dataset.zvsPath = DEFAULT_PAIR.zvsPath;
+  wrapper.dataset.ztkPath = ztkPath;
+  wrapper.dataset.zvsPath = zvsPath;
 
   wrapper.innerHTML = `
     <div class="pairHeader">
-      <label><input type="checkbox" class="pairEnabled" checked /> <strong>Pair 0</strong></label>
+      <label><input type="checkbox" class="pairEnabled" ${enabled ? 'checked' : ''} /> <strong>Pair 0</strong></label>
     </div>
     <div class="pairBody">
-      <div class="defaultFileLine">ZTK file: ${DEFAULT_PAIR.ztkName}</div>
-      <div class="defaultFileLine">ZVS file: ${DEFAULT_PAIR.zvsName}</div>
+      <div class="defaultFileLine">ZTK file: ${ztkPath}</div>
+      <div class="defaultFileLine">ZVS file: ${zvsPath}</div>
     </div>
   `;
 
   container.appendChild(wrapper);
 }
 
-function addCustomPairForm() {
+function addCustomPairForm(options = {}) {
   const container = pairsContainer();
   if (!container) return;
+  const {
+    pairId,
+    enabled = true,
+    ztkPath = '',
+    zvsPath = '',
+    ztkSourceMode = 'file',
+    zvsSourceMode = 'file',
+  } = options;
 
-  const pairId = state.nextPairId;
-  state.nextPairId += 1;
+  const actualPairId = pairId ?? state.nextPairId;
+  state.nextPairId = Math.max(state.nextPairId, actualPairId + 1);
 
   const wrapper = document.createElement('div');
   wrapper.className = 'pair';
-  wrapper.dataset.pairId = String(pairId);
+  wrapper.dataset.pairId = String(actualPairId);
   wrapper.dataset.pairType = 'custom';
 
   wrapper.innerHTML = `
     <div class="pairHeader">
-      <label><input type="checkbox" class="pairEnabled" checked /> <strong>Pair ${pairId}</strong></label>
+      <label><input type="checkbox" class="pairEnabled" ${enabled ? 'checked' : ''} /> <strong>Pair ${actualPairId}</strong></label>
       <button type="button" class="removePair">Remove</button>
     </div>
     <div class="pairBody">
-      <label>ZTK file
-        <input type="file" class="ztkFile" accept=".ztk,text/plain" />
-      </label>
-      <label>ZVS file
-        <input type="file" class="zvsFile" accept=".zvs,text/plain" />
-      </label>
+      <div>
+        <div class="sourceTitle">
+          ZTK
+          <span class="toggleGroup">
+            <label class="toggleOption"><input type="radio" class="ztkSourceMode" name="ztkSource-${actualPairId}" value="file" ${ztkSourceMode === 'file' ? 'checked' : ''} /><span>file</span></label>
+            <label class="toggleOption"><input type="radio" class="ztkSourceMode" name="ztkSource-${actualPairId}" value="path" ${ztkSourceMode === 'path' ? 'checked' : ''} /><span>path</span></label>
+          </span>
+        </div>
+        <label class="ztkFileRow">
+          <input type="file" class="ztkFile" accept=".ztk,text/plain" />
+        </label>
+        <label class="ztkPathRow">
+          <input type="text" class="ztkPath" value="${ztkPath}" placeholder="./assets/arm_2DoF.ztk" />
+        </label>
+      </div>
+      <div>
+        <div class="sourceTitle">
+          ZVS
+          <span class="toggleGroup">
+            <label class="toggleOption"><input type="radio" class="zvsSourceMode" name="zvsSource-${actualPairId}" value="file" ${zvsSourceMode === 'file' ? 'checked' : ''} /><span>file</span></label>
+            <label class="toggleOption"><input type="radio" class="zvsSourceMode" name="zvsSource-${actualPairId}" value="path" ${zvsSourceMode === 'path' ? 'checked' : ''} /><span>path</span></label>
+          </span>
+        </div>
+        <label class="zvsFileRow">
+          <input type="file" class="zvsFile" accept=".zvs,text/plain" />
+        </label>
+        <label class="zvsPathRow">
+          <input type="text" class="zvsPath" value="${zvsPath}" placeholder="./assets/arm.zvs" />
+        </label>
+      </div>
     </div>
   `;
 
+  wrapper.querySelectorAll('.ztkSourceMode, .zvsSourceMode').forEach((radio) => {
+    radio.addEventListener('change', () => applyCustomPairSourceMode(wrapper));
+  });
   wrapper.querySelector('.removePair')?.addEventListener('click', () => {
     wrapper.remove();
   });
 
+  applyCustomPairSourceMode(wrapper);
   container.appendChild(wrapper);
+}
+
+function applyCustomPairSourceMode(wrapper) {
+  const ztkMode = wrapper.querySelector('.ztkSourceMode:checked')?.value ?? 'file';
+  const zvsMode = wrapper.querySelector('.zvsSourceMode:checked')?.value ?? 'file';
+  const ztkFile = wrapper.querySelector('.ztkFile');
+  const zvsFile = wrapper.querySelector('.zvsFile');
+  const ztkPath = wrapper.querySelector('.ztkPath');
+  const zvsPath = wrapper.querySelector('.zvsPath');
+  const ztkFileRow = wrapper.querySelector('.ztkFileRow');
+  const ztkPathRow = wrapper.querySelector('.ztkPathRow');
+  const zvsFileRow = wrapper.querySelector('.zvsFileRow');
+  const zvsPathRow = wrapper.querySelector('.zvsPathRow');
+
+  if (ztkFile) ztkFile.disabled = ztkMode !== 'file';
+  if (zvsFile) zvsFile.disabled = zvsMode !== 'file';
+  if (ztkPath) ztkPath.disabled = ztkMode !== 'path';
+  if (zvsPath) zvsPath.disabled = zvsMode !== 'path';
+  if (ztkFileRow) ztkFileRow.style.display = ztkMode === 'file' ? '' : 'none';
+  if (ztkPathRow) ztkPathRow.style.display = ztkMode === 'path' ? '' : 'none';
+  if (zvsFileRow) zvsFileRow.style.display = zvsMode === 'file' ? '' : 'none';
+  if (zvsPathRow) zvsPathRow.style.display = zvsMode === 'path' ? '' : 'none';
 }
 
 function setStatus(message) {
@@ -162,15 +225,6 @@ function updatePlaybackTimeLabel() {
   const label = document.getElementById('playbackTime');
   if (!label) return;
   label.textContent = `Time: ${state.playbackTimeSec.toFixed(2)}s`;
-}
-
-function togglePanel() {
-  state.isPanelHidden = !state.isPanelHidden;
-  const panel = document.getElementById('controlsPanel');
-  const button = document.getElementById('togglePanelButton');
-
-  if (panel) panel.style.display = state.isPanelHidden ? 'none' : '';
-  if (button) button.textContent = state.isPanelHidden ? 'Show' : 'Hide';
 }
 
 async function loadSelectedPairs() {
@@ -241,12 +295,47 @@ async function loadPair(node, rokiThree) {
 
   const ztkFile = node.querySelector('.ztkFile')?.files?.[0];
   const zvsFile = node.querySelector('.zvsFile')?.files?.[0];
-  if (!ztkFile || !zvsFile) {
-    setStatus('Some selected pairs are missing ztk/zvs file.');
-    return null;
+  const ztkPath = node.querySelector('.ztkPath')?.value?.trim() ?? '';
+  const zvsPath = node.querySelector('.zvsPath')?.value?.trim() ?? '';
+  const ztkMode = node.querySelector('.ztkSourceMode:checked')?.value ?? 'file';
+  const zvsMode = node.querySelector('.zvsSourceMode:checked')?.value ?? 'file';
+  let ztkText;
+  let zvsText;
+  let ztkDisplayName;
+  let zvsDisplayName;
+
+  if (ztkMode === 'path') {
+    if (!ztkPath) {
+      setStatus('Some selected pairs are missing ztk path.');
+      return null;
+    }
+    ztkText = await fetchText(ztkPath);
+    ztkDisplayName = ztkPath;
+  } else {
+    if (!ztkFile) {
+      setStatus('Some selected pairs are missing ztk file.');
+      return null;
+    }
+    ztkText = await readFileText(ztkFile);
+    ztkDisplayName = ztkFile.name;
   }
 
-  const [ztkText, zvsText] = await Promise.all([readFileText(ztkFile), readFileText(zvsFile)]);
+  if (zvsMode === 'path') {
+    if (!zvsPath) {
+      setStatus('Some selected pairs are missing zvs path.');
+      return null;
+    }
+    zvsText = await fetchText(zvsPath);
+    zvsDisplayName = zvsPath;
+  } else {
+    if (!zvsFile) {
+      setStatus('Some selected pairs are missing zvs file.');
+      return null;
+    }
+    zvsText = await readFileText(zvsFile);
+    zvsDisplayName = zvsFile.name;
+  }
+
   const chainLoader = new rokiThree.ChainLoader();
   const sequenceLoader = new rokiThree.SequenceLoader();
 
@@ -254,7 +343,7 @@ async function loadPair(node, rokiThree) {
     pairId,
     robot: chainLoader.parse(ztkText),
     sequence: sequenceLoader.parse(zvsText),
-    displayName: `${ztkFile.name} + ${zvsFile.name}`,
+    displayName: `${ztkDisplayName} + ${zvsDisplayName}`,
   };
 }
 
@@ -276,6 +365,116 @@ function clearAllActors() {
   state.lastFrameTimeMs = performance.now();
   updatePlaybackTimeLabel();
   setStatus('Cleared all loaded models. Playback stopped and rewound.');
+}
+
+function collectPairConfig() {
+  const pairNodes = [...document.querySelectorAll('.pair')];
+  const pairs = pairNodes.map((node) => {
+    const pairType = node.dataset.pairType ?? 'custom';
+    if (pairType === 'default') {
+      return {
+        id: Number(node.dataset.pairId ?? 0),
+        type: 'default',
+        enabled: Boolean(node.querySelector('.pairEnabled')?.checked),
+        ztkPath: node.dataset.ztkPath ?? DEFAULT_PAIR.ztkPath,
+        zvsPath: node.dataset.zvsPath ?? DEFAULT_PAIR.zvsPath,
+      };
+    }
+    return {
+      id: Number(node.dataset.pairId ?? -1),
+      type: 'custom',
+      enabled: Boolean(node.querySelector('.pairEnabled')?.checked),
+      ztkSourceMode: node.querySelector('.ztkSourceMode:checked')?.value === 'path' ? 'path' : 'file',
+      zvsSourceMode: node.querySelector('.zvsSourceMode:checked')?.value === 'path' ? 'path' : 'file',
+      ztkPath: node.querySelector('.ztkPath')?.value?.trim() ?? '',
+      zvsPath: node.querySelector('.zvsPath')?.value?.trim() ?? '',
+    };
+  });
+
+  return {
+    version: PAIR_CONFIG_VERSION,
+    pairs,
+  };
+}
+
+function savePairConfigToFile() {
+  const config = collectPairConfig();
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = 'roki-three-pairs.json';
+  anchor.click();
+  URL.revokeObjectURL(url);
+  setStatus('Saved pair config to JSON file.');
+}
+
+function triggerConfigLoad() {
+  const input = document.getElementById('configFileInput');
+  if (!input) return;
+  input.click();
+}
+
+async function handleConfigFileSelected(event) {
+  const input = event.target;
+  const file = input?.files?.[0];
+  if (!file) return;
+
+  try {
+    const text = await readFileText(file);
+    const config = JSON.parse(text);
+    applyPairConfig(config);
+    setStatus('Loaded pair config.');
+  } catch (error) {
+    console.error(error);
+    setStatus('Failed to load pair config.');
+  } finally {
+    input.value = '';
+  }
+}
+
+function applyPairConfig(config) {
+  if (!config || typeof config !== 'object') {
+    throw new Error('Invalid config format.');
+  }
+  if (config.version !== PAIR_CONFIG_VERSION || !Array.isArray(config.pairs)) {
+    throw new Error('Unsupported config version or pairs format.');
+  }
+
+  const container = pairsContainer();
+  if (!container) return;
+
+  clearAllActors();
+  container.innerHTML = '';
+  state.nextPairId = 1;
+
+  const normalized = [...config.pairs].sort((a, b) => Number(a.id) - Number(b.id));
+  const defaultPair = normalized.find((pair) => pair.type === 'default' && Number(pair.id) === 0);
+  addDefaultPairForm({
+    enabled: defaultPair ? Boolean(defaultPair.enabled) : true,
+    ztkPath: defaultPair?.ztkPath ?? DEFAULT_PAIR.ztkPath,
+    zvsPath: defaultPair?.zvsPath ?? DEFAULT_PAIR.zvsPath,
+  });
+
+  const customPairs = normalized.filter(
+    (pair) => pair.type === 'custom' && Number.isInteger(Number(pair.id)) && Number(pair.id) > 0,
+  );
+
+  if (customPairs.length === 0) {
+    addCustomPairForm();
+    return;
+  }
+
+  for (const pair of customPairs) {
+    addCustomPairForm({
+      pairId: Number(pair.id),
+      enabled: Boolean(pair.enabled),
+      ztkSourceMode: (pair.ztkSourceMode ?? pair.sourceMode) === 'path' ? 'path' : 'file',
+      zvsSourceMode: (pair.zvsSourceMode ?? pair.sourceMode) === 'path' ? 'path' : 'file',
+      ztkPath: typeof pair.ztkPath === 'string' ? pair.ztkPath : '',
+      zvsPath: typeof pair.zvsPath === 'string' ? pair.zvsPath : '',
+    });
+  }
 }
 
 function playAnimation() {
