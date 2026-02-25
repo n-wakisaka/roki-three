@@ -158,6 +158,12 @@ function setStatus(message) {
   if (status) status.textContent = message;
 }
 
+function updatePlaybackTimeLabel() {
+  const label = document.getElementById('playbackTime');
+  if (!label) return;
+  label.textContent = `Time: ${state.playbackTimeSec.toFixed(2)}s`;
+}
+
 function togglePanel() {
   state.isPanelHidden = !state.isPanelHidden;
   const panel = document.getElementById('controlsPanel');
@@ -268,6 +274,7 @@ function clearAllActors() {
   state.isPlaying = false;
   state.playbackTimeSec = 0;
   state.lastFrameTimeMs = performance.now();
+  updatePlaybackTimeLabel();
   setStatus('Cleared all loaded models. Playback stopped and rewound.');
 }
 
@@ -289,6 +296,7 @@ function restartAnimation() {
     actor.sequence.rewind();
     actor.robot.FK(actor.sequence.data?.value);
   }
+  updatePlaybackTimeLabel();
   setStatus('Restarted from beginning.');
 }
 
@@ -314,6 +322,7 @@ function animate() {
     }
   }
 
+  updatePlaybackTimeLabel();
   state.renderer.render(state.scene, state.camera);
 }
 
